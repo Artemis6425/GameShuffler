@@ -1,0 +1,7 @@
+dist
+build
+archive
+.venv
+__pycache__
+mario_kart_backups
+*.spec
