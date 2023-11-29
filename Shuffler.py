@@ -102,16 +102,21 @@ def update_state():
     if not HARD_MODE:
         print(f"Remaining Instance Count: {len(remaining_slots)}\n")
 
-    if not first_run:
-        rename_file(inactive_emu_slot, delayed_previous_slot,"toBank")
-    first_run = False
 
     if multiple_slots_remain:
         # Wait random amount of time
         random_time = random.randint(MINIMUM_SLOT_TIME, MAXIMUM_SLOT_TIME) * (1/sleep_time)  # Multiply by inverse of sleep_time. We do this so that we can run this function every 0.1 seconds instead of every second, to make it feel more responsive
         if not HARD_MODE:
             print(f"Waiting for {int(random_time/10)} seconds\n")
+        temp = int(random_time)
+        temp2 = range(temp)[len(range(temp))//2]
+        tempcount = 1
         for i in range(int(random_time)):  # Make sure to cast to an int, as it could be a float
+            tempcount +=1
+            if tempcount == temp2:
+                if not first_run:
+                    rename_file(inactive_emu_slot, delayed_previous_slot,"toBank")
+                first_run = False
             if stop_thread.is_set() or not GAME_ACTIVE:
                 break
             waiting_thread.wait(timeout=sleep_time)
