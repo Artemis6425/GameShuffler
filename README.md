@@ -6,6 +6,7 @@ This program loads savestates you've made for your game at random, making for a 
 
 ## Features
 
+- Easy-to-use Shuffler.exe file, no need to mess with python!
 - Ability to change the minimum and maximum delays before switching instances
 - Option to shut off the tts-style audio
 - Unlocked the amount of savestates you can use, making the limit ""infinite""
@@ -15,7 +16,8 @@ This program loads savestates you've made for your game at random, making for a 
 
 ## How to Use
 
-- run the program by typing `python Shuffler.py`
+- Double click the `Shuffler.exe` file. It'll open up a terminal with the game information.
+- Keep the window visible, and then keep your emulator focused. You're pretty much set to go!
 - The controls are **Spacebar** and **.** 
     - **Spacebar** starts the program, and how you mark instances as complete.
     - **.** is how you undo, if you accidentally mark one as complete, or the wrong one as complete.
@@ -30,6 +32,11 @@ This program loads savestates you've made for your game at random, making for a 
 1. Make a backup of all the `savestate#` files you've created, because they're effectively one-time-use
 1. Remove the savestate files your emulator has created for the game
 
+### Getting the files
+
+1. [Download the latest release](https://github.com/Artemis6425/GameShuffler/releases/latest)
+1. Extract to it's own folder, with all the other files with it. They're necessary for the Shuffler.exe file to run!
+
 ### Options.ini
 
 1. There are brief explanations of what each line does, but there are a few that are mandatory to change, which we're doing now.
@@ -39,12 +46,5 @@ This program loads savestates you've made for your game at random, making for a 
 1. `savestateName` is what the emulator makes the names of the savestate. This usually is the name of the game, but we want to make sure we have it down properly. In the above section, mine was `SUPER MARIO 64`. Make sure this doesn't include the file extension, as the file extension by itself is put into `fileExtension`. Replace the number that normally says the savestate slot with `@`!
 1. The last important thing you need to make sure is correct are the `savestateKey`, `loadstateKey`, `slot1Key` and `slot2Key` hotkeys are correct. You can verify this by checking inside your emulator hotkey settings. Make sure you set them all to single-key binds!
 
-### The Code Itself
-
-it's not super user friendly yet since I don't want to release without all the features, but this is how to get it to work for now:
-
-1. Install Python 3.10.6 (should work on similar versions, untested though)
-1. Clone/download the repository.
-1. Open a terminal in the directory the files in, and type `pip install -r requirements.txt`. This will install all the dependencies for the program.
 
 From here, you should be completely set up! Change the settings as you see fit, and hop back up to [How to Use](https://github.com/Artemis6425/GameShuffler/tree/master#how-to-use)
