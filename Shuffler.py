@@ -42,7 +42,6 @@ sleep_time = 0.1  # Amount of time to sleep, in seconds
 last_swap = 0  # The time when the last game swap happened
 last_spacebar = 0  # The time when the last spacebar interrupt occurred
 last_undo = 0
-fileBanked = False
 SPACEBAR_COOLDOWN = 2  # Cooldown time for the spacebar interrupt, in seconds
 GAME_ACTIVE = True
 
@@ -50,7 +49,6 @@ SAVE_SLOT_KEY = config['SETTINGS']['savestateKey']
 LOAD_SLOT_KEY = config['SETTINGS']['loadstateKey']
 
 first_run = True
-toActive = False
 
 def swap_game():
     global last_swap, current_slot, previous_slot, multiple_slots_remain, first_run, delayed_previous_slot
@@ -88,33 +86,24 @@ def swap_game():
         update_state()
 
 def update_state():
-    global first_run, fileBanked,  toActive
+    global first_run, last_swap
     
     print(f"\nSWAPPING TO INSTANCE {current_slot}!\n")
     switch_file()
-
     first_run = False
-
-
     keyboard.send(emu_slot)
     keyboard.send(LOAD_SLOT_KEY)
     
-
     last_swap = time.time()  # Store the current time
     if not HARD_MODE:
         print(f"Remaining Instance Count: {len(remaining_slots)}\n")
-
 
     if multiple_slots_remain:
         # Wait random amount of time
         random_time = random.randint(MINIMUM_SLOT_TIME, MAXIMUM_SLOT_TIME) * (1/sleep_time)  # Multiply by inverse of sleep_time. We do this so that we can run this function every 0.1 seconds instead of every second, to make it feel more responsive
         if not HARD_MODE:
             print(f"Waiting for {int(random_time/10)} seconds\n")
-        temp = int(random_time)
-        temp2 = range(temp)[len(range(temp))//2]
-        tempcount = 1
         for i in range(int(random_time)):  # Make sure to cast to an int, as it could be a float
-            tempcount +=1
             if stop_thread.is_set() or not GAME_ACTIVE:
                 break
             waiting_thread.wait(timeout=sleep_time)
@@ -160,7 +149,7 @@ def undo_listener():
 
 #This removes/places savestats into the "bank"
 def switch_file():
-    global savestate_path, ss_name, fileExt, toActive, first_run, emu_slot, delayed_previous_slot, current_slot, first_run
+    global savestate_path, ss_name, fileExt, first_run, emu_slot, delayed_previous_slot, current_slot
     tempFileExt = fileExt.replace("@", emu_slot)
 
     if not first_run:
@@ -175,8 +164,6 @@ def switch_file():
     old_banked_file = os.path.join(savestate_path, f"savestate{current_slot}")
     new_active_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
     os.rename(old_banked_file, new_active_file)
-
-
 
 ######################################################################
 
