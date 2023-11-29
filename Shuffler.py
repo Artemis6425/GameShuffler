@@ -68,6 +68,7 @@ def swap_game():
     elif len(remaining_slots) == 1 and multiple_slots_remain: # If this is the first time we've gotten to the last slot, we swap to it, then set a flag so that we don't swap again
         multiple_slots_remain = False
         current_slot = random.choice(remaining_slots)
+        delayed_previous_slot = previous_slot
         if USE_AUDIO:
             audio_manager.play_audio("Final Level.wav",False,False)
         update_state()
@@ -87,11 +88,17 @@ def swap_game():
 
 def update_state():
     global first_run, last_swap
-    
+
+    # This is the delay to give the emulator time to save 
+    if not first_run:
+        # Select & save
+        keyboard.send(emu_slot)
+        keyboard.send(SAVE_SLOT_KEY)
+        waiting_thread.wait(timeout=save_delay)
+
     print(f"\nSWAPPING TO INSTANCE {current_slot}!\n")
     switch_file()
     first_run = False
-    keyboard.send(emu_slot)
     keyboard.send(LOAD_SLOT_KEY)
     
     last_swap = time.time()  # Store the current time
@@ -107,13 +114,6 @@ def update_state():
             if stop_thread.is_set() or not GAME_ACTIVE:
                 break
             waiting_thread.wait(timeout=sleep_time)
-
-    # Select & save
-    keyboard.send(emu_slot)
-    keyboard.send(SAVE_SLOT_KEY)
-
-    # This is the delay to give the emulator time to save 
-    waiting_thread.wait(timeout=save_delay)
 
 
 # Runs on separate thread and alerts swap_game() if spacebar is pressed

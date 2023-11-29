@@ -54,3 +54,5 @@ From here, you should be completely set up! Change the settings as you see fit, 
 ## Known issues
 
 - When undoing, an exception error appears in the terminal. Only visual, the functionality still works.
+    - With the exception of undoing the 2nd to last instance. Just don't fail until its fixed 4Head
+- The wrong instance gets removed from rotation if you hit `spacebar` too close to the save/load process. This can be avoided by doing it closer to the midway of the timer. 
