@@ -5,7 +5,6 @@ import threading
 import sys
 import os
 import configparser
-import psutil
 from AudioPlayer import AudioManager
 from OBS_Websockets import OBSWebsocketsManager
 from collections import deque
@@ -20,15 +19,17 @@ slot_bank = list(range(1, int(config['SETTINGS']['totalSlots'])+1)) # The amount
 slot_bank = list(map(str,slot_bank))
 remaining_slots = random.sample(slot_bank, int(config['SETTINGS']['slotCount'])) # This is what picks the slots to actually play
 USE_AUDIO = config['SETTINGS'].getboolean('useAudio')
+HARD_MODE = config['SETTINGS'].getboolean('hardMode')
 ss_name = config['SETTINGS']['savestateName']
+fileExt = config['SETTINGS']['fileExtension']
 
 USING_OBS_WEBSOCKETS = False # Whether or not program should display the # of remaining stars in OBS
 OBS_TEXT_SOURCE = "STARS LEFT" # Name this whatever text element you want to update in OBS
 
 REMOVED_SLOTS_STACK = deque()
 current_slot = None  # The current game slot
-current_emu_slot = "1" # This is the slot the emu will actually load
-inactive_emu_slot = "2"
+current_emu_slot = config['SETTINGS']['slot1Key'] # This is the slot the emu will actually load
+inactive_emu_slot = config['SETTINGS']['slot2Key']
 previous_slot = None  # The previous game slot
 delayed_previous_slot = None # This lets the file moving see the previous slots before it's overwritten
 multiple_slots_remain = True
@@ -44,8 +45,8 @@ last_undo = 0
 SPACEBAR_COOLDOWN = 2  # Cooldown time for the spacebar interrupt, in seconds
 GAME_ACTIVE = True
 
-SAVE_SLOT_KEY = "F5"
-LOAD_SLOT_KEY = "F7"
+SAVE_SLOT_KEY = config['SETTINGS']['savestateKey']
+LOAD_SLOT_KEY = config['SETTINGS']['loadstateKey']
 
 first_run = True
 
@@ -54,7 +55,7 @@ def swap_game():
     
     # Update OBS text
     if USING_OBS_WEBSOCKETS:
-        obswebsockets_manager.set_text(OBS_TEXT_SOURCE, f"STARS LEFT: {len(remaining_slots)}")
+        obswebsockets_manager.set_text(OBS_TEXT_SOURCE, f"INSTANCES LEFT: {len(remaining_slots)}")
 
     # Swap to new slot
     if len(remaining_slots) > 1: # If there's at least 2 unfinished slots, load a new random slot
@@ -94,11 +95,12 @@ def update_state():
     keyboard.release(LOAD_SLOT_KEY)
     
     
-    print(f"\nSWAPPING TO INSTANCE {current_slot}!\n")
+    print(f"SWAPPING TO INSTANCE {current_slot}!\n")
     
 
     last_swap = time.time()  # Store the current time
-    print(f"Remaining Instance Count: {len(remaining_slots)}\n")
+    if not HARD_MODE:
+        print(f"Remaining Instance Count: {len(remaining_slots)}\n")
 
     if not first_run:
         rename_file(inactive_emu_slot, delayed_previous_slot,"toBank")
@@ -107,7 +109,8 @@ def update_state():
     if multiple_slots_remain:
         # Wait random amount of time
         random_time = random.randint(MINIMUM_SLOT_TIME, MAXIMUM_SLOT_TIME) * (1/sleep_time)  # Multiply by inverse of sleep_time. We do this so that we can run this function every 0.1 seconds instead of every second, to make it feel more responsive
-        print(f"Waiting for {int(random_time/10)} seconds\n")
+        if not HARD_MODE:
+            print(f"Waiting for {int(random_time/10)} seconds\n")
         for i in range(int(random_time)):  # Make sure to cast to an int, as it could be a float
             if stop_thread.is_set() or not GAME_ACTIVE:
                 break
@@ -166,14 +169,14 @@ def undo_listener():
 #This removes/places savestats into the "bank"
 def rename_file(v1, v2, v3):
     #v1 is _emu_slot, v2 is v2 is _slot, v3 is "toBank" or "toActive"
-    global savestate_path
-    global ss_name
+    global savestate_path, ss_name, fileExt
+    tempFileExt = fileExt.replace("@", v1)
     if v3 == "toBank":
-        old_file = os.path.join(savestate_path, f"{ss_name}.pj{v1}.zip")
+        old_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
         new_file = os.path.join(savestate_path, f"savestate{v2}")
     elif v3 == "toActive":
         old_file = os.path.join(savestate_path, f"savestate{v2}")
-        new_file = os.path.join(savestate_path, f"{ss_name}.pj{v1}.zip")
+        new_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
     os.rename(old_file, new_file)
 
 #just flips what slot is available to load
@@ -193,7 +196,7 @@ try:
         audio_manager.play_audio("Starting in 3 2 1.wav", False)
     countdown = 3
     while countdown > 0 and GAME_ACTIVE:
-        print(f"\nSTARTING IN {countdown}")
+        print(f"STARTING IN {countdown}\n")
         countdown -= 1
         waiting_thread.wait(timeout=1)
 

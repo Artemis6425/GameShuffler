@@ -10,15 +10,15 @@ This program loads savestates you've made for your game at random, making for a 
 - Option to shut off the tts-style audio
 - Unlocked the amount of savestates you can use, making the limit ""infinite""
 - Functionality to set the amount of "instances" you want to play and randomly selecting from the savestates you have set up
-- ~~Compatible with multiple emulators~~ Coming soon!
-- ~~Compatible with custom hotkeys~~ Coming soon!
+- Compatible with multiple emulators
+- Compatible with custom hotkeys
 
 ## How to Use
 
--run the program by typing `python Shuffler.py`
--The controls are **Spacebar** and **.**. 
-    -**Spacebar** starts the program, and how you mark instances as complete.
-    -**.** is how you undo, if you accidentally mark one as complete, or the wrong one as complete.
+- run the program by typing `python Shuffler.py`
+- The controls are **Spacebar** and **.** 
+    - **Spacebar** starts the program, and how you mark instances as complete.
+    - **.** is how you undo, if you accidentally mark one as complete, or the wrong one as complete.
 
 ## Setup
 
@@ -36,7 +36,8 @@ This program loads savestates you've made for your game at random, making for a 
 1. You want to update the `savestatePath` to the folder path of where your emulator keeps the savestates (this is the same one we were just messing with)
 1. You also want to update the `totalSlots` depending on how many `savestate#` files you created. If you created 15, you'll want to set it to 15, like this: `totalSlots = 15`.
 1. `slotCount` is asking how many games/instances you want to play. If you want to play all the ones you created, set it to the same number as `totalSlots`. If you want to play a randomized subset of the ones you made, make it any number under `totalSlots`.
-1. `savestateName` is what the emulator makes the names of the savestate. This usually is the name of the game, but we want to make sure we have it down properly. In the above section, mine was `SUPER MARIO 64`. Make sure this doesn't include the file extension.
+1. `savestateName` is what the emulator makes the names of the savestate. This usually is the name of the game, but we want to make sure we have it down properly. In the above section, mine was `SUPER MARIO 64`. Make sure this doesn't include the file extension, as the file extension by itself is put into `fileExtension`. Replace the number that normally says the savestate slot with `@`!
+1. The last important thing you need to make sure is correct are the `savestateKey`, `loadstateKey`, `slot1Key` and `slot2Key` hotkeys are correct. You can verify this by checking inside your emulator hotkey settings. Make sure you set them all to single-key binds!
 
 ### The Code Itself
 
@@ -46,4 +47,4 @@ it's not super user friendly yet since I don't want to release without all the f
 1. Clone/download the repository.
 1. Open a terminal in the directory the files in, and type `pip install -r requirements.txt`. This will install all the dependencies for the program.
 
-From here, you should be completely set up! Change the settings as you see fit, and hop back up to How to Use
+From here, you should be completely set up! Change the settings as you see fit, and hop back up to [How to Use](https://github.com/Artemis6425/GameShuffler/tree/master#how-to-use)
