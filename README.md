@@ -20,7 +20,8 @@ This program loads savestates you've made for your game at random, making for a 
 - Keep the window visible, and then keep your emulator focused. You're pretty much set to go!
 - The controls are **Spacebar** and **.** 
     - **Spacebar** starts the program, and how you mark instances as complete.
-    - **.** is how you undo, if you accidentally mark one as complete, or the wrong one as complete.
+    - **.** is how you undo, if you accidentally mark one as complete, or the wrong one as complete. Note the [error](https://github.com/Artemis6425/GameShuffler/tree/master#known-issues).
+    - If you want to end the game early, either close the window or click the window and hit `Ctrl` and `C` at the same time.
 
 ## Setup
 
@@ -44,7 +45,12 @@ This program loads savestates you've made for your game at random, making for a 
 1. You also want to update the `totalSlots` depending on how many `savestate#` files you created. If you created 15, you'll want to set it to 15, like this: `totalSlots = 15`.
 1. `slotCount` is asking how many games/instances you want to play. If you want to play all the ones you created, set it to the same number as `totalSlots`. If you want to play a randomized subset of the ones you made, make it any number under `totalSlots`.
 1. `savestateName` is what the emulator makes the names of the savestate. This usually is the name of the game, but we want to make sure we have it down properly. In the above section, mine was `SUPER MARIO 64`. Make sure this doesn't include the file extension, as the file extension by itself is put into `fileExtension`. Replace the number that normally says the savestate slot with `@`!
-1. The last important thing you need to make sure is correct are the `savestateKey`, `loadstateKey`, `slot1Key` and `slot2Key` hotkeys are correct. You can verify this by checking inside your emulator hotkey settings. Make sure you set them all to single-key binds!
+1. `saveDelay` is the delay between saving the state and loading the next one. I've set this to `0.5` by default, as this works quite well for Project64. However, if you're having issues that say something like `File in use by another process`, then you need to increase this number. On the other hand, if you're noticing your emulator is saving them extremely quickly and you're just waiting around for it to load the next one, you can decrease it. Make sure you account for the savestates that randomly take way longer for no reason!
+1. The last important thing you need to make sure is correct are the `savestateKey`, `loadstateKey` and `slotKey` hotkeys are correct. You can verify this by checking inside your emulator hotkey settings. Make sure you set them all to single-key binds!
 
 
 From here, you should be completely set up! Change the settings as you see fit, and hop back up to [How to Use](https://github.com/Artemis6425/GameShuffler/tree/master#how-to-use)
+
+## Known issues
+
+- When undoing, an exception error appears in the terminal. Only visual, the functionality still works.

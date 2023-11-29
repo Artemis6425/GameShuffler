@@ -22,14 +22,14 @@ USE_AUDIO = config['SETTINGS'].getboolean('useAudio')
 HARD_MODE = config['SETTINGS'].getboolean('hardMode')
 ss_name = config['SETTINGS']['savestateName']
 fileExt = config['SETTINGS']['fileExtension']
+save_delay = float(config['SETTINGS']['saveDelay'])
 
 USING_OBS_WEBSOCKETS = False # Whether or not program should display the # of remaining stars in OBS
 OBS_TEXT_SOURCE = "STARS LEFT" # Name this whatever text element you want to update in OBS
 
 REMOVED_SLOTS_STACK = deque()
 current_slot = None  # The current game slot
-current_emu_slot = config['SETTINGS']['slot1Key'] # This is the slot the emu will actually load
-inactive_emu_slot = config['SETTINGS']['slot2Key']
+emu_slot = config['SETTINGS']['slotKey'] # This is the slot the emu will actually load
 previous_slot = None  # The previous game slot
 delayed_previous_slot = None # This lets the file moving see the previous slots before it's overwritten
 multiple_slots_remain = True
@@ -42,6 +42,7 @@ sleep_time = 0.1  # Amount of time to sleep, in seconds
 last_swap = 0  # The time when the last game swap happened
 last_spacebar = 0  # The time when the last spacebar interrupt occurred
 last_undo = 0
+fileBanked = False
 SPACEBAR_COOLDOWN = 2  # Cooldown time for the spacebar interrupt, in seconds
 GAME_ACTIVE = True
 
@@ -49,6 +50,7 @@ SAVE_SLOT_KEY = config['SETTINGS']['savestateKey']
 LOAD_SLOT_KEY = config['SETTINGS']['loadstateKey']
 
 first_run = True
+toActive = False
 
 def swap_game():
     global last_swap, current_slot, previous_slot, multiple_slots_remain, first_run, delayed_previous_slot
@@ -86,16 +88,16 @@ def swap_game():
         update_state()
 
 def update_state():
-    global first_run
-    rename_file(current_emu_slot,current_slot,"toActive")
+    global first_run, fileBanked,  toActive
+    
+    print(f"\nSWAPPING TO INSTANCE {current_slot}!\n")
+    switch_file()
 
-    keyboard.send(current_emu_slot)
-    keyboard.press(LOAD_SLOT_KEY)
-    waiting_thread.wait(timeout=0.1)
-    keyboard.release(LOAD_SLOT_KEY)
-    
-    
-    print(f"SWAPPING TO INSTANCE {current_slot}!\n")
+    first_run = False
+
+
+    keyboard.send(emu_slot)
+    keyboard.send(LOAD_SLOT_KEY)
     
 
     last_swap = time.time()  # Store the current time
@@ -113,45 +115,30 @@ def update_state():
         tempcount = 1
         for i in range(int(random_time)):  # Make sure to cast to an int, as it could be a float
             tempcount +=1
-            if tempcount == temp2:
-                if not first_run:
-                    rename_file(inactive_emu_slot, delayed_previous_slot,"toBank")
-                first_run = False
             if stop_thread.is_set() or not GAME_ACTIVE:
                 break
             waiting_thread.wait(timeout=sleep_time)
 
-
-
     # Select & save
-    keyboard.send(current_emu_slot)
-    keyboard.press(SAVE_SLOT_KEY)
+    keyboard.send(emu_slot)
+    keyboard.send(SAVE_SLOT_KEY)
 
-    # Wait 0.1 seconds inbetween save->load, so that PJ64 can process it
-    waiting_thread.wait(timeout=.1)
-
-    # Release keys
-    keyboard.release(SAVE_SLOT_KEY)
-
-    # Immediately switches what slot button to press after saving
-    flip_slot()
-
-    waiting_thread.wait(timeout=0.1)
+    # This is the delay to give the emulator time to save 
+    waiting_thread.wait(timeout=save_delay)
 
 
 # Runs on separate thread and alerts swap_game() if spacebar is pressed
 def spacebar_listener():
-    global last_spacebar, current_slot, delayed_previous_slot
+    global last_spacebar, current_slot, delayed_previous_slot, previous_slot
     while GAME_ACTIVE:
         keyboard.wait('space')  # Wait for space bar
         if time.time() - last_swap >= 1 and time.time() - last_spacebar >= SPACEBAR_COOLDOWN:  # Check if enough time has passed since the last game swap, and if enough time has passed since the last spacebar interrupt
             last_spacebar = time.time()  # Store the current time
             if current_slot and current_slot in remaining_slots:
-                delayed_previous_slot = current_slot
                 remaining_slots.remove(current_slot)
                 REMOVED_SLOTS_STACK.append(current_slot)
                 print(f"Removed {current_slot} from remaining_slots\n")
-            stop_thread.set()  # Signal the other thread to stop
+            stop_thread.set()  # Signal the other thread to stop2
             if len(remaining_slots) > 1:
                 if USE_AUDIO:
                     audio_manager.play_audio("Star Collected.wav",False,False)
@@ -172,22 +159,24 @@ def undo_listener():
             break
 
 #This removes/places savestats into the "bank"
-def rename_file(v1, v2, v3):
-    #v1 is _emu_slot, v2 is v2 is _slot, v3 is "toBank" or "toActive"
-    global savestate_path, ss_name, fileExt
-    tempFileExt = fileExt.replace("@", v1)
-    if v3 == "toBank":
-        old_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
-        new_file = os.path.join(savestate_path, f"savestate{v2}")
-    elif v3 == "toActive":
-        old_file = os.path.join(savestate_path, f"savestate{v2}")
-        new_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
-    os.rename(old_file, new_file)
+def switch_file():
+    global savestate_path, ss_name, fileExt, toActive, first_run, emu_slot, delayed_previous_slot, current_slot, first_run
+    tempFileExt = fileExt.replace("@", emu_slot)
 
-#just flips what slot is available to load
-def flip_slot():
-    global current_emu_slot, inactive_emu_slot
-    current_emu_slot, inactive_emu_slot = inactive_emu_slot,current_emu_slot
+    if not first_run:
+        if current_slot != previous_slot:
+            new_banked_file = os.path.join(savestate_path, f"savestate{previous_slot}")
+        else:
+            new_banked_file = os.path.join(savestate_path, f"savestate{delayed_previous_slot}")
+        old_active_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
+        
+        os.rename(old_active_file, new_banked_file)
+
+    old_banked_file = os.path.join(savestate_path, f"savestate{current_slot}")
+    new_active_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
+    os.rename(old_banked_file, new_active_file)
+
+
 
 ######################################################################
 
