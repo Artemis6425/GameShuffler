@@ -6,12 +6,12 @@ This program loads savestates you've made for your game at random, making for a 
 
 ## Features
 
--Ability to change the minimum and maximum delays before switching instances
--Option to shut off the tts-style audio
--Unlocked the amount of savestates you can use, making the limit ""infinite""
--Functionality to set the amount of "instances" you want to play and randomly selecting from the savestates you have set up
--~~Compatible with multiple emulators~~ Coming soon!
--~~Compatible with custom hotkeys~~ Coming soon!
+- Ability to change the minimum and maximum delays before switching instances
+- Option to shut off the tts-style audio
+- Unlocked the amount of savestates you can use, making the limit ""infinite""
+- Functionality to set the amount of "instances" you want to play and randomly selecting from the savestates you have set up
+- ~~Compatible with multiple emulators~~ Coming soon!
+- ~~Compatible with custom hotkeys~~ Coming soon!
 
 ## How to Use
 
