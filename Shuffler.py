@@ -151,18 +151,19 @@ def undo_listener():
 def switch_file():
     global savestate_path, ss_name, fileExt, first_run, emu_slot, delayed_previous_slot, current_slot
     tempFileExt = fileExt.replace("@", emu_slot)
+    tempFileName = ss_name.replace("@", emu_slot)
 
     if not first_run:
         if current_slot != previous_slot:
             new_banked_file = os.path.join(savestate_path, f"savestate{previous_slot}")
         else:
             new_banked_file = os.path.join(savestate_path, f"savestate{delayed_previous_slot}")
-        old_active_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
+        old_active_file = os.path.join(savestate_path, f"{tempFileName}{tempFileExt}")
         
         os.rename(old_active_file, new_banked_file)
 
     old_banked_file = os.path.join(savestate_path, f"savestate{current_slot}")
-    new_active_file = os.path.join(savestate_path, f"{ss_name}{tempFileExt}")
+    new_active_file = os.path.join(savestate_path, f"{tempFileName}{tempFileExt}")
     os.rename(old_banked_file, new_active_file)
 
 ######################################################################
