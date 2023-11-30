@@ -13,15 +13,17 @@ This program loads savestates you've made for your game at random, making for a 
 - Functionality to set the amount of "instances" you want to play and randomly selecting from the savestates you have set up
 - Compatible with multiple emulators
 - Compatible with custom hotkeys
+- ~~Ability to switch between multiple games~~ Coming soon!
 
 ## How to Use
 
 - Double click the `Shuffler.exe` file. It'll open up a terminal with the game information.
-- Keep the window visible, and then keep your emulator focused. You're pretty much set to go!
+- Keep the window visible, and then **keep your emulator focused**. You're pretty much set to go!
 - The controls are **Spacebar** and **.** 
     - **Spacebar** starts the program, and how you mark instances as complete.
     - **.** is how you undo, if you accidentally mark one as complete, or the wrong one as complete. Note the [error](https://github.com/Artemis6425/GameShuffler/tree/master#known-issues).
     - If you want to end the game early, either close the window or click the window and hit `Ctrl` and `C` at the same time.
+- To set it up again after going, simply remove the `savestate#` files, and the savestate slot file the emulator was using. Copy/paste the backup you made into the folder again, and you're ready to go!
 
 ## Setup
 
@@ -53,6 +55,27 @@ From here, you should be completely set up! Change the settings as you see fit, 
 
 ## Known issues
 
-- When undoing, an exception error appears in the terminal. Only visual, the functionality still works.
-    - With the exception of undoing the 2nd to last instance. Just don't fail until its fixed 4Head
-- The wrong instance gets removed from rotation if you hit `spacebar` too close to the save/load process. This can be avoided by doing it closer to the midway of the timer. 
+- When undoing the 2nd to last instance, the script bascially crashes. Just don't fail until its fixed 4Head
+- Undoing also immediately switches your instance. Could be a "feature" but it's a side effect.
+
+## Future ideas
+
+- A version that instead of multiple savestates, uses multiple instances of your emulator. This would allow you to do multi-game Shuffles
+- A usable GUI
+- The ability to instead look at the emulator window directly to be able to tell the moment it's done saving the savestate. This would allow the program to load the next instance even faster
+
+## Changelog
+
+### v1 "All Initial Features!"
+
+- Initial release! Functioning as long as you don't do anything too complicated.
+
+### v2 "Bugfixed and Better than ever"
+
+- Updated options file, fixed a few bugs
+
+### v3 "The 'Actually Working' Release"
+
+- Switched how the keyboard interrupts work, changed from the initial `keyboard.wait()` to `if keyboard.is_pressed():`. This fixes the `KeyError` that appeared when undoing. The final undo is still broken, however.
+- Changed when the `last_swap` variable is defined, now no longer accidentally lets you remove the wrong instance.
+- Removed unnecessary variabls from code, made it slightly easier to read.
