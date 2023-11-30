@@ -137,7 +137,7 @@ def spacebar_listener():
 def undo_listener():
     global last_undo, current_slot
     while GAME_ACTIVE:
-        keyboard.wait('backspace')  # Wait for undo
+        keyboard.wait('.')  # Wait for undo
         if time.time() - last_swap >= 1 and time.time() - last_undo >= SPACEBAR_COOLDOWN:  # Check if enough time has passed since the last game swap, and if enough time has passed since the last spacebar interrupt
             last_undo = time.time()  # Store the current time
             if len(REMOVED_SLOTS_STACK) >= 1:

@@ -58,6 +58,7 @@ From here, you should be completely set up! Change the settings as you see fit, 
 - Undoing causes a `KeyError` in the terminal. As far as I can tell, this is purely visual. Most undoing works as intended.
     - However, when undoing the 2nd to last instance, the script bascially crashes. Just don't fail until its fixed 4Head
 - Undoing also immediately switches your instance. Could be a "feature" but it's a side effect.
+- Sometimes, hitting space for the final instance doesn't work. Fortunately you're already on the final instance, I guess...
 
 ## Future ideas
 
@@ -79,5 +80,5 @@ From here, you should be completely set up! Change the settings as you see fit, 
 
 - Re-introduced the bug that causes the `KeyError` to show up when undoing. Purely visual error, it will properly undo.
     -That in mind, the "Final undo" error still exists!
-- Changed when the `last_swap` variable is defined, now no longer accidentally lets you remove the wrong instance.
+- Changed when the `last_swap` variable is defined, now adds a "blackout period" for hitting space. This fixes an issue where if you hit space at the wrong time, it would remove the wrong instance from the queue.
 - Removed unnecessary variabls from code, made it slightly easier to read.
