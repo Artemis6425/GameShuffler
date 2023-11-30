@@ -55,7 +55,8 @@ From here, you should be completely set up! Change the settings as you see fit, 
 
 ## Known issues
 
-- When undoing the 2nd to last instance, the script bascially crashes. Just don't fail until its fixed 4Head
+- Undoing causes a `KeyError` in the terminal. As far as I can tell, this is purely visual. Most undoing works as intended.
+    - However, when undoing the 2nd to last instance, the script bascially crashes. Just don't fail until its fixed 4Head
 - Undoing also immediately switches your instance. Could be a "feature" but it's a side effect.
 
 ## Future ideas
@@ -76,6 +77,7 @@ From here, you should be completely set up! Change the settings as you see fit, 
 
 ### v3 "The 'Actually Working' Release"
 
-- Switched how the keyboard interrupts work, changed from the initial `keyboard.wait()` to `if keyboard.is_pressed():`. This fixes the `KeyError` that appeared when undoing. The final undo is still broken, however.
+- Re-introduced the bug that causes the `KeyError` to show up when undoing. Purely visual error, it will properly undo.
+    -That in mind, the "Final undo" error still exists!
 - Changed when the `last_swap` variable is defined, now no longer accidentally lets you remove the wrong instance.
 - Removed unnecessary variabls from code, made it slightly easier to read.

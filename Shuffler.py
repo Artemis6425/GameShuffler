@@ -120,32 +120,32 @@ def update_state():
 def spacebar_listener():
     global last_spacebar, current_slot, delayed_previous_slot, previous_slot
     while GAME_ACTIVE:
-        if keyboard.is_pressed('space'):  # Wait for space bar
-            if time.time() - last_swap >= 1 and time.time() - last_spacebar >= SPACEBAR_COOLDOWN:  # Check if enough time has passed since the last game swap, and if enough time has passed since the last spacebar interrupt
-                last_spacebar = time.time()  # Store the current time
-                if current_slot and current_slot in remaining_slots:
-                    remaining_slots.remove(current_slot)
-                    REMOVED_SLOTS_STACK.append(current_slot)
-                    print(f"Removed {current_slot} from remaining_slots\n")
-                stop_thread.set()  # Signal the other thread to stop2
-                if len(remaining_slots) > 1:
-                    if USE_AUDIO:
-                        audio_manager.play_audio("Star Collected.wav",False,False)
-                break
+        keyboard.wait('space')  # Wait for space bar
+        if time.time() - last_swap >= 1 and time.time() - last_spacebar >= SPACEBAR_COOLDOWN:  # Check if enough time has passed since the last game swap, and if enough time has passed since the last spacebar interrupt
+            last_spacebar = time.time()  # Store the current time
+            if current_slot and current_slot in remaining_slots:
+                remaining_slots.remove(current_slot)
+                REMOVED_SLOTS_STACK.append(current_slot)
+                print(f"Removed {current_slot} from remaining_slots\n")
+            stop_thread.set()  # Signal the other thread to stop2
+            if len(remaining_slots) > 1:
+                if USE_AUDIO:
+                    audio_manager.play_audio("Star Collected.wav",False,False)
+            break
 
 # Listener for undo (press .)
 def undo_listener():
     global last_undo, current_slot
     while GAME_ACTIVE:
-        if keyboard.is_pressed('.'):  # Wait for undo
-            if time.time() - last_swap >= 1 and time.time() - last_undo >= SPACEBAR_COOLDOWN:  # Check if enough time has passed since the last game swap, and if enough time has passed since the last spacebar interrupt
-                last_undo = time.time()  # Store the current time
-                if len(REMOVED_SLOTS_STACK) >= 1:
-                    undone_slot = REMOVED_SLOTS_STACK.pop()
-                    remaining_slots.append(undone_slot)
-                    print(f"Undid removal of {undone_slot}. Added back to remaining_slots.\n")
-                stop_thread.set()  # Signal the other thread to stop
-                break
+        keyboard.wait('backspace')  # Wait for undo
+        if time.time() - last_swap >= 1 and time.time() - last_undo >= SPACEBAR_COOLDOWN:  # Check if enough time has passed since the last game swap, and if enough time has passed since the last spacebar interrupt
+            last_undo = time.time()  # Store the current time
+            if len(REMOVED_SLOTS_STACK) >= 1:
+                undone_slot = REMOVED_SLOTS_STACK.pop()
+                remaining_slots.append(undone_slot)
+                print(f"Undid removal of {undone_slot}. Added back to remaining_slots.\n")
+            stop_thread.set()  # Signal the other thread to stop
+            break
 
 #This removes/places savestats into the "bank"
 def switch_file():
