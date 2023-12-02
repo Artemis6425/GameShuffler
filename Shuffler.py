@@ -22,7 +22,7 @@ USE_AUDIO = config['SETTINGS'].getboolean('useAudio')
 HARD_MODE = config['SETTINGS'].getboolean('hardMode')
 ss_name = config['SETTINGS']['savestateName']
 fileExt = config['SETTINGS']['fileExtension']
-save_delay = float(config['SETTINGS']['saveDelay'])
+save_delay = float(config['SETTINGS']['saveDelay']) - 0.1
 
 USING_OBS_WEBSOCKETS = False # Whether or not program should display the # of remaining stars in OBS
 OBS_TEXT_SOURCE = "STARS LEFT" # Name this whatever text element you want to update in OBS
@@ -93,14 +93,18 @@ def update_state():
     if not first_run:
         # Select & save
         keyboard.send(emu_slot)
-        keyboard.send(SAVE_SLOT_KEY)
+        keyboard.press(SAVE_SLOT_KEY)
+        waiting_thread.wait(timeout=0.1)
+        keyboard.release(SAVE_SLOT_KEY)
         # This is the delay to give the emulator time to save before swapping files to load to
         waiting_thread.wait(timeout=save_delay)
 
     print(f"\nSWAPPING TO INSTANCE {current_slot}!\n")
     switch_file()
     first_run = False
-    keyboard.send(LOAD_SLOT_KEY)
+    keyboard.press(LOAD_SLOT_KEY)
+    waiting_thread.wait(timeout=0.1)
+    keyboard.release(LOAD_SLOT_KEY)
     
     if not HARD_MODE:
         print(f"Remaining Instance Count: {len(remaining_slots)}\n")
