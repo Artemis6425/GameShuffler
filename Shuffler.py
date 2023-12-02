@@ -6,7 +6,6 @@ import sys
 import os
 import configparser
 from AudioPlayer import AudioManager
-from OBS_Websockets import OBSWebsocketsManager
 from collections import deque
 
 config = configparser.ConfigParser()
@@ -24,9 +23,6 @@ ss_name = config['SETTINGS']['savestateName']
 fileExt = config['SETTINGS']['fileExtension']
 save_delay = float(config['SETTINGS']['saveDelay']) - 0.1
 
-USING_OBS_WEBSOCKETS = False # Whether or not program should display the # of remaining stars in OBS
-OBS_TEXT_SOURCE = "STARS LEFT" # Name this whatever text element you want to update in OBS
-
 REMOVED_SLOTS_STACK = deque()
 current_slot = None  # The current game slot
 emu_slot = config['SETTINGS']['slotKey'] # This is the slot the emu will actually load
@@ -34,8 +30,6 @@ previous_slot = None  # The previous game slot
 delayed_previous_slot = None # This lets the file moving see the previous slots before it's overwritten
 multiple_slots_remain = True
 audio_manager = AudioManager()
-if USING_OBS_WEBSOCKETS:
-    obswebsockets_manager = OBSWebsocketsManager()
 stop_thread = threading.Event()
 waiting_thread = threading.Event()
 sleep_time = 0.1  # Amount of time to sleep, in seconds
@@ -55,8 +49,7 @@ def swap_game():
     
     last_swap = time.time()  # Store the current time
     # Update OBS text
-    if USING_OBS_WEBSOCKETS:
-        obswebsockets_manager.set_text(OBS_TEXT_SOURCE, f"INSTANCES LEFT: {len(remaining_slots)}")
+    obstxt_update(f"INSTANCES LEFT: {len(remaining_slots)}")
 
     # Swap to new slot
     if len(remaining_slots) > 1: # If there's at least 2 unfinished slots, load a new random slot
@@ -77,8 +70,7 @@ def swap_game():
         if USE_AUDIO:
             audio_manager.play_audio("You Have Completed The Challenge.wav",False,False)
         print("CONGRATULATIONS! YOU MAY NOW POG. Feel free to close this program now and try again :D")
-        if USING_OBS_WEBSOCKETS:
-            obswebsockets_manager.set_text(OBS_TEXT_SOURCE, f"ANY PRIMERS???")
+        obstxt_update(f"CHALLENGE COMPLETE")
         waiting_thread.wait(timeout=5)
         waiting_thread.set()
         sys.exit()
@@ -134,7 +126,7 @@ def spacebar_listener():
             stop_thread.set()  # Signal the other thread to stop2
             if len(remaining_slots) > 1:
                 if USE_AUDIO:
-                    audio_manager.play_audio("Star Collected.wav",False,False)
+                    audio_manager.play_audio("Instance Completed.wav",False,False)
             break
 
 # Listener for undo (press .)
@@ -170,10 +162,17 @@ def switch_file():
     new_active_file = os.path.join(savestate_path, f"{tempFileName}{tempFileExt}")
     os.rename(old_banked_file, new_active_file)
 
+#this just opens and closes the OBS Text.txt file, and passes in the text we want it to say
+def obstxt_update(text):
+    obstxt = open("OBS Text.txt", "w")
+    obstxt.write(text)
+    obstxt.close()
+
 ######################################################################
 
 try:
     print("\nPRESS SPACEBAR TO BEGIN CHALLENGE!\n")
+    obstxt_update(f"INSTANCES LEFT: {len(remaining_slots)}")
     if USE_AUDIO:
         audio_manager.play_audio("Press Spacebar To Begin.wav", False)
     keyboard.wait('space')

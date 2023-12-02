@@ -50,6 +50,12 @@ This program loads savestates you've made for your game at random, making for a 
 1. `saveDelay` is the delay between saving the state and loading the next one. I've set this to `0.5` by default, as this works quite well for Project64. However, if you're having issues that say something like `File in use by another process`, then you need to increase this number. On the other hand, if you're noticing your emulator is saving them extremely quickly and you're just waiting around for it to load the next one, you can decrease it. Make sure you account for the savestates that randomly take way longer for no reason!
 1. The last important thing you need to make sure is correct are the `savestateKey`, `loadstateKey` and `slotKey` hotkeys are correct. You can verify this by checking inside your emulator hotkey settings. Make sure you set them all to single-key binds!
 
+### OBS Setup
+
+If you want your stream to have an "INSTANCES LEFT" text box, do the few steps below:
+1. Add a text source to your layout and name it whatever you want.
+1. Instead of writing your own text, click "Read from file".
+1. Click "Browse" and locate the "OBS Text.txt" file that is in the program folder. It's that easy!
 
 From here, you should be completely set up! Change the settings as you see fit, and hop back up to [How to Use](https://github.com/Artemis6425/GameShuffler/tree/master#how-to-use)
 
@@ -82,3 +88,9 @@ From here, you should be completely set up! Change the settings as you see fit, 
     -That in mind, the "Final undo" error still exists!
 - Changed when the `last_swap` variable is defined, now adds a "blackout period" for hitting space. This fixes an issue where if you hit space at the wrong time, it would remove the wrong instance from the queue.
 - Removed unnecessary variabls from code, made it slightly easier to read.
+
+### v3.1 "More Bugs Removed"
+
+- Removed all references to OBS_websocket, and replaced it with the much simpler "OBS Text.txt"
+- Removed a bug where sometimes the emulator would not detect the save/load keypresses from the program
+- Renamed "Star Collected.wav" to "Instance Completed.wav" to be more generic
