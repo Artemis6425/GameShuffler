@@ -53,6 +53,7 @@ This program loads savestates you've made for your game at random, making for a 
 ### OBS Setup
 
 If you want your stream to have an "INSTANCES LEFT" text box, do the few steps below:
+1. In the `options.ini` file, change the `obsText` to be whatever you want. By default, it'll say `INSTANCES LEFT: x` but you can change it to whatever you'd like. Some decent suggestions are `RACES LEFT` and `STARS LEFT`.
 1. Add a text source to your layout and name it whatever you want.
 1. Instead of writing your own text, click "Read from file".
 1. Click "Browse" and locate the "OBS Text.txt" file that is in the program folder. It's that easy!
@@ -96,6 +97,11 @@ From here, you should be completely set up! Change the settings as you see fit, 
 
 ### v3.2 "Even More Bugs Removed"
 
-- Simplified `options.ini` even more by updating some text, removing an unnecessary variable, and renaming another.
+- Updated the `options.ini` with the following changes:
+    - Updated the wording on some of the help text to clarify things better
+    - Combined the `savestateName` and `fileExtension` variables into a new one, `savestateFile`
+    - Renamed `slotCount` to `slotsToPlay`, to make it more clear what the variable is changing
+    - Changed the default state of `useAudio` to off, because I think it's annoying lol
+    - Added a new option, `obsText`, which lets you change what the text before the colon in OBS is
 - Fixed the bug that didn't let you finish the final instance
 - Added a reminder in the console text to have your emulator focused before starting

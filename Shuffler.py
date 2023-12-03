@@ -21,6 +21,7 @@ USE_AUDIO = config['SETTINGS'].getboolean('useAudio')
 HARD_MODE = config['SETTINGS'].getboolean('hardMode')
 ss_name = config['SETTINGS']['savestateFile']
 save_delay = float(config['SETTINGS']['saveDelay']) - 0.1
+obsText = config['SETTINGS']['obsText']
 
 REMOVED_SLOTS_STACK = deque()
 current_slot = None  # The current game slot
@@ -49,7 +50,7 @@ def swap_game():
     # After it goes down to 1 instance, swap_game runs constantly. This is why I added the below if statement
     if multiple_slots_remain:
         last_swap = time.time()  # Store the current time
-        obstxt_update(f"INSTANCES LEFT: {len(remaining_slots)}") # Update OBS text
+        obstxt_update(f"{obsText}: {len(remaining_slots)}") # Update OBS text
 
     # Swap to new slot
     if len(remaining_slots) > 1: # If there's at least 2 unfinished slots, load a new random slot
@@ -170,7 +171,7 @@ def obstxt_update(text):
 
 try:
     print("\nPRESS SPACEBAR TO BEGIN CHALLENGE!\n(make sure to have your emulator focused!)\n\n")
-    obstxt_update(f"INSTANCES LEFT: {len(remaining_slots)}")
+    obstxt_update(f"{obsText}: {len(remaining_slots)}")
     if USE_AUDIO:
         audio_manager.play_audio("Press Spacebar To Begin.wav", False)
     keyboard.wait('space')
