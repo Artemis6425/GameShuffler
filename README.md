@@ -64,7 +64,6 @@ From here, you should be completely set up! Change the settings as you see fit, 
 - Undoing causes a `KeyError` in the terminal. As far as I can tell, this is purely visual. Most undoing works as intended.
     - However, when undoing the 2nd to last instance, the script bascially crashes. Just don't fail until its fixed 4Head
 - Undoing also immediately switches your instance. Could be a "feature" but it's a side effect.
-- Sometimes, hitting space for the final instance doesn't work. Fortunately you're already on the final instance, I guess...
 
 ## Future ideas
 
@@ -94,3 +93,9 @@ From here, you should be completely set up! Change the settings as you see fit, 
 - Removed all references to OBS_websocket, and replaced it with the much simpler "OBS Text.txt"
 - Removed a bug where sometimes the emulator would not detect the save/load keypresses from the program
 - Renamed "Star Collected.wav" to "Instance Completed.wav" to be more generic
+
+### v3.2 "Even More Bugs Removed"
+
+- Simplified `options.ini` even more by updating some text, removing an unnecessary variable, and renaming another.
+- Fixed the bug that didn't let you finish the final instance
+- Added a reminder in the console text to have your emulator focused before starting

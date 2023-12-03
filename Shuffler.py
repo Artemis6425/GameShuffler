@@ -16,11 +16,10 @@ MAXIMUM_SLOT_TIME = int(config['SETTINGS']['maximumDelay']) # The minimum time w
 savestate_path = config['SETTINGS']['savestatePath'] # The path where the savestates are located
 slot_bank = list(range(1, int(config['SETTINGS']['totalSlots'])+1)) # The amount of slots the user has created
 slot_bank = list(map(str,slot_bank))
-remaining_slots = random.sample(slot_bank, int(config['SETTINGS']['slotCount'])) # This is what picks the slots to actually play
+remaining_slots = random.sample(slot_bank, int(config['SETTINGS']['slotToPlay'])) # This is what picks the slots to actually play
 USE_AUDIO = config['SETTINGS'].getboolean('useAudio')
 HARD_MODE = config['SETTINGS'].getboolean('hardMode')
-ss_name = config['SETTINGS']['savestateName']
-fileExt = config['SETTINGS']['fileExtension']
+ss_name = config['SETTINGS']['savestateFile']
 save_delay = float(config['SETTINGS']['saveDelay']) - 0.1
 
 REMOVED_SLOTS_STACK = deque()
@@ -46,10 +45,11 @@ first_run = True
 
 def swap_game():
     global last_swap, current_slot, previous_slot, multiple_slots_remain, first_run, delayed_previous_slot
-    
-    last_swap = time.time()  # Store the current time
-    # Update OBS text
-    obstxt_update(f"INSTANCES LEFT: {len(remaining_slots)}")
+
+    # After it goes down to 1 instance, swap_game runs constantly. This is why I added the below if statement
+    if multiple_slots_remain:
+        last_swap = time.time()  # Store the current time
+        obstxt_update(f"INSTANCES LEFT: {len(remaining_slots)}") # Update OBS text
 
     # Swap to new slot
     if len(remaining_slots) > 1: # If there's at least 2 unfinished slots, load a new random slot
@@ -82,9 +82,8 @@ def swap_game():
 def update_state():
     global first_run, last_swap
 
+    keyboard.send(emu_slot) # Select the slot we want to save & load from
     if not first_run:
-        # Select & save
-        keyboard.send(emu_slot)
         keyboard.press(SAVE_SLOT_KEY)
         waiting_thread.wait(timeout=0.1)
         keyboard.release(SAVE_SLOT_KEY)
@@ -145,8 +144,7 @@ def undo_listener():
 
 #This removes/places savestats into the "bank"
 def switch_file():
-    global savestate_path, ss_name, fileExt, first_run, emu_slot, delayed_previous_slot, current_slot
-    tempFileExt = fileExt.replace("@", emu_slot)
+    global savestate_path, ss_name, first_run, emu_slot, delayed_previous_slot, current_slot
     tempFileName = ss_name.replace("@", emu_slot)
 
     if not first_run:
@@ -154,12 +152,12 @@ def switch_file():
             new_banked_file = os.path.join(savestate_path, f"savestate{previous_slot}")
         else:
             new_banked_file = os.path.join(savestate_path, f"savestate{delayed_previous_slot}")
-        old_active_file = os.path.join(savestate_path, f"{tempFileName}{tempFileExt}")
+        old_active_file = os.path.join(savestate_path, f"{tempFileName}")
         
         os.rename(old_active_file, new_banked_file)
 
     old_banked_file = os.path.join(savestate_path, f"savestate{current_slot}")
-    new_active_file = os.path.join(savestate_path, f"{tempFileName}{tempFileExt}")
+    new_active_file = os.path.join(savestate_path, f"{tempFileName}")
     os.rename(old_banked_file, new_active_file)
 
 #this just opens and closes the OBS Text.txt file, and passes in the text we want it to say
@@ -171,7 +169,7 @@ def obstxt_update(text):
 ######################################################################
 
 try:
-    print("\nPRESS SPACEBAR TO BEGIN CHALLENGE!\n")
+    print("\nPRESS SPACEBAR TO BEGIN CHALLENGE!\n(make sure to have your emulator focused!)\n\n")
     obstxt_update(f"INSTANCES LEFT: {len(remaining_slots)}")
     if USE_AUDIO:
         audio_manager.play_audio("Press Spacebar To Begin.wav", False)
