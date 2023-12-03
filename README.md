@@ -22,7 +22,7 @@ This program loads savestates you've made for your game at random, making for a 
 - The controls are **Spacebar** and **.** 
     - **Spacebar** starts the program, and how you mark instances as complete.
     - **.** is how you undo, if you accidentally mark one as complete, or the wrong one as complete. Note the [error](https://github.com/Artemis6425/GameShuffler/tree/master#known-issues).
-    - If you want to end the game early, either close the window or click the window and hit `Ctrl` and `C` at the same time.
+    - If you want to end the game early, just close the terminal window the program opens.
 - To set it up again after going, simply remove the `savestate#` files, and the savestate slot file the emulator was using. Copy/paste the backup you made into the folder again, and you're ready to go!
 
 ## Setup
@@ -62,9 +62,8 @@ From here, you should be completely set up! Change the settings as you see fit, 
 
 ## Known issues
 
-- Undoing causes a `KeyError` in the terminal. As far as I can tell, this is purely visual. Most undoing works as intended.
-    - However, when undoing the 2nd to last instance, the script bascially crashes. Just don't fail until its fixed 4Head
-- Undoing also immediately switches your instance. Could be a "feature" but it's a side effect.
+- Undoing causes a `KeyError` in the terminal. As far as I can tell, this is purely visual. Undoing works as intended.
+    - When undoing the 2nd to last instance, the script outputs an *even bigger* `KeyError`. This is still purely visual.
 
 ## Future ideas
 
@@ -85,7 +84,7 @@ From here, you should be completely set up! Change the settings as you see fit, 
 ### v3 "The 'Actually Working' Release"
 
 - Re-introduced the bug that causes the `KeyError` to show up when undoing. Purely visual error, it will properly undo.
-    -That in mind, the "Final undo" error still exists!
+    - That in mind, the "Final undo" error still exists!
 - Changed when the `last_swap` variable is defined, now adds a "blackout period" for hitting space. This fixes an issue where if you hit space at the wrong time, it would remove the wrong instance from the queue.
 - Removed unnecessary variabls from code, made it slightly easier to read.
 
@@ -95,7 +94,7 @@ From here, you should be completely set up! Change the settings as you see fit, 
 - Removed a bug where sometimes the emulator would not detect the save/load keypresses from the program
 - Renamed "Star Collected.wav" to "Instance Completed.wav" to be more generic
 
-### v3.2 "Even More Bugs Removed"
+### v4 "All Bugs Gone... Hopefully"
 
 - Updated the `options.ini` with the following changes:
     - Updated the wording on some of the help text to clarify things better
@@ -103,5 +102,7 @@ From here, you should be completely set up! Change the settings as you see fit, 
     - Renamed `slotCount` to `slotsToPlay`, to make it more clear what the variable is changing
     - Changed the default state of `useAudio` to off, because I think it's annoying lol
     - Added a new option, `obsText`, which lets you change what the text before the colon in OBS is
-- Fixed the bug that didn't let you finish the final instance
 - Added a reminder in the console text to have your emulator focused before starting
+- **Fixed the bug that didn't allow you to undo the second to last split**. (This still outputs a large `KeyError`, but works as intended.)
+- Fixed the bug that didn't let you finish the final instance
+- Fixed the bug where hitting the undo hotkey would immediately switch your instance.

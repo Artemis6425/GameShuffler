@@ -54,6 +54,7 @@ def swap_game():
 
     # Swap to new slot
     if len(remaining_slots) > 1: # If there's at least 2 unfinished slots, load a new random slot
+        multiple_slots_remain = True
         while True: # Pick new random slot that isn't the same as previous
             current_slot = random.choice(remaining_slots)
             delayed_previous_slot = previous_slot
@@ -64,6 +65,7 @@ def swap_game():
         multiple_slots_remain = False
         current_slot = random.choice(remaining_slots)
         delayed_previous_slot = previous_slot
+        previous_slot = current_slot
         if USE_AUDIO:
             audio_manager.play_audio("Final Level.wav",False,False)
         update_state()
@@ -131,16 +133,17 @@ def spacebar_listener():
 
 # Listener for undo (press .)
 def undo_listener():
-    global last_undo, current_slot
+    global last_undo, current_slot, multiple_slots_remain
     while GAME_ACTIVE:
         keyboard.wait('.')  # Wait for undo
         if time.time() - last_swap >= 1 and time.time() - last_undo >= SPACEBAR_COOLDOWN:  # Check if enough time has passed since the last game swap, and if enough time has passed since the last spacebar interrupt
             last_undo = time.time()  # Store the current time
+            multiple_slots_remain = True
             if len(REMOVED_SLOTS_STACK) >= 1:
                 undone_slot = REMOVED_SLOTS_STACK.pop()
                 remaining_slots.append(undone_slot)
                 print(f"Undid removal of {undone_slot}. Added back to remaining_slots.\n")
-            stop_thread.set()  # Signal the other thread to stop
+            # stop_thread.set()  # This stop_thread command is what causes the insta-switch after undoing. This also causes the double switch when undo last split.
             break
 
 #This removes/places savestats into the "bank"
